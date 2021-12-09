@@ -66,6 +66,13 @@ class Mapper
             throw new \Exception("Max recursion level for mapping");
         }
         $classReader = new ClassReader($this->getObject($class));
+
+        foreach ($data as $k=>$d) {
+            if(is_string($k)) {
+                $data[str_replace('-', '_', $k)] = $d;
+            }
+        }
+
         foreach ($classReader->getProperties() as $property) {
             $propertyName = $this->getPropertyName($property, $data);
             //Key in array not found as property
