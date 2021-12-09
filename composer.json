@@ -3,9 +3,7 @@
   "description": "Easy mapper array to nested objects",
   "type": "library",
   "require": {
-    "php": ">=7.4",
-    "ext-mbstring": "*",
-    "php-di/phpdoc-reader": "dev-master"
+    "php": ">=7"
   },
   "license": "MIT",
   "autoload": {
