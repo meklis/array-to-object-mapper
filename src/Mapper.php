@@ -92,6 +92,9 @@ class Mapper
                 $value = [];
                 $isAssoc = $this->isAssoc($data[$propertyName]);
                 foreach ($data[$propertyName] as $key => $objStruct) {
+                    if(!is_array($objStruct)) {
+                        throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of array<T> and contain properties for class {$property->getType()}, " . gettype($objStruct) . " given");
+                    }
                     if ($isAssoc) {
                         $value[$key] = $this->map($objStruct, $property->getType(), $recursion++);
                     } else {
@@ -99,6 +102,9 @@ class Mapper
                     }
                 }
             } elseif ($property->isObject() && is_array($data[$propertyName])) {
+                if(!is_array($data[$propertyName])) {
+                    throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of array and contain properties for {$property->getType()}, " . gettype($data[$propertyName]) . " given");
+                }
                 $value = $this->map($data[$propertyName], $property->getType(), $recursion++);
             }
             $classReader->setProperty($property->getName(), $value);
@@ -134,28 +140,28 @@ class Mapper
                 if (is_numeric($value)) {
                     $value = (int)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
+                    throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'float':
                 if (is_numeric($value)) {
                     $value = (float)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
+                    throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'string':
                 if (is_string($value)) {
                     $value = (string)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
+                    throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'boolean':
                 if (is_bool($value)) {
                     $value = (bool)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
+                    throw new \Exception("Property {$property->getClassName()}::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
         }
