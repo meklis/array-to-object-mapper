@@ -27,7 +27,7 @@ class PhpDocParser
     {
         $type = $this->parseType();
         return $property->setNullAllowed($type['is_null_allowed'])
-            ->setArrayOfObjects($type['is_array_of_objects'])
+            ->setArrayOfElements($type['is_array_of_elements'])
             ->setBasicType($type['is_basic_type'])
             ->setIsObject(!$type['is_basic_type'])
             ->setType($type['type']);
@@ -39,12 +39,20 @@ class PhpDocParser
             'is_null_allowed' => false,
             'is_class_name' => false,
             'is_basic_type' => false,
-            'is_array_of_objects' => false,
+            'is_array_of_elements' => false,
             'type' => null,
         ];
 
         if (preg_match('/^.*@var (.*)\n.*$/m', $this->property->getDocComment(), $matches)) {
             $elements = explode("|", trim(str_replace(' ', '', $matches[1])));
+
+            foreach ($elements as $index=>$element) {
+                if(strpos($element, '[]') !== false) {
+                    $data['is_array_of_elements'] = true;
+                    $elements[$index] = str_replace('[]', '', $element);
+                }
+            }
+
             foreach ($this->basicTypes as $type => $value) {
                 if(in_array($type, $elements)) {
                     $data['is_basic_type'] = true;
@@ -57,10 +65,6 @@ class PhpDocParser
             if(!$data['is_basic_type']) {
                 foreach ($elements as $element) {
                     if($element === 'null') continue;
-                    if(strpos($element, '[]') !== false) {
-                        $data['is_array_of_objects'] = true;
-                        $element = str_replace('[]', '', $element);
-                    }
                     $data['type'] = class_exists($element) ? $element : $this->findClass($element);
                 }
             }

@@ -9,7 +9,7 @@ class Property
     protected $mapKey;
     protected $nullAllowed;
     protected $className;
-    protected $arrayOfObjects;
+    protected $arrayOfElements;
     protected $basicType;
     protected $isObject;
 
@@ -114,18 +114,18 @@ class Property
     /**
      * @return mixed
      */
-    public function isArrayOfObjects()
+    public function isArrayOfElements()
     {
-        return $this->arrayOfObjects;
+        return $this->arrayOfElements;
     }
 
     /**
-     * @param mixed $arrayOfObjects
+     * @param mixed $arrayOfElements
      * @return Property
      */
-    public function setArrayOfObjects($arrayOfObjects)
+    public function setArrayOfElements($arrayOfElements)
     {
-        $this->arrayOfObjects = $arrayOfObjects;
+        $this->arrayOfElements = $arrayOfElements;
         return $this;
     }
 

@@ -79,41 +79,17 @@ class Mapper
 
             $value = $data[$propertyName];
 
-            if ($property->isBasicType() && !$property->isArrayOfObjects()) {
+            if ($property->isBasicType() && !$property->isArrayOfElements()) {
                 if (!is_null($value)) {
-                    switch ($property->getType()) {
-                        case 'integer':
-                            if (is_numeric($value)) {
-                                $value = (int)$value;
-                            } elseif ($this->isStrict()) {
-                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
-                            }
-                            break;
-                        case 'float':
-                            if (is_numeric($value)) {
-                                $value = (float)$value;
-                            } elseif ($this->isStrict()) {
-                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
-                            }
-                            break;
-                        case 'string':
-                            if (is_string($value)) {
-                                $value = (string)$value;
-                            } elseif ($this->isStrict()) {
-                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
-                            }
-                            break;
-                        case 'boolean':
-                            if (is_bool($value)) {
-                                $value = (bool)$value;
-                            } elseif ($this->isStrict()) {
-                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
-                            }
-                            break;
+                    $value = $this->formatBasicType($property,$value);
+                }
+            } elseif ($property->isBasicType() && $property->isArrayOfElements()) {
+                foreach ($value as $k=>$v) {
+                    if (!is_null($v)) {
+                         $value[$k] = $this->formatBasicType($property, $v);
                     }
                 }
-
-            } elseif ($property->isArrayOfObjects()) {
+            } elseif ($property->isArrayOfElements()) {
                 $value = [];
                 $isAssoc = $this->isAssoc($data[$propertyName]);
                 foreach ($data[$propertyName] as $key => $objStruct) {
@@ -152,10 +128,45 @@ class Mapper
         return '';
     }
 
+    protected function formatBasicType(Property $property, $value) {
+        switch ($property->getType()) {
+            case 'integer':
+                if (is_numeric($value)) {
+                    $value = (int)$value;
+                } elseif ($this->isStrict()) {
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                }
+                break;
+            case 'float':
+                if (is_numeric($value)) {
+                    $value = (float)$value;
+                } elseif ($this->isStrict()) {
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                }
+                break;
+            case 'string':
+                if (is_string($value)) {
+                    $value = (string)$value;
+                } elseif ($this->isStrict()) {
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                }
+                break;
+            case 'boolean':
+                if (is_bool($value)) {
+                    $value = (bool)$value;
+                } elseif ($this->isStrict()) {
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                }
+                break;
+        }
+        return $value;
+    }
+
     function isAssoc(array $arr)
     {
         if (array() === $arr) return false;
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
+
 
 }

@@ -18,7 +18,7 @@ class Child
     protected ?Child $child;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $params = [];
 
