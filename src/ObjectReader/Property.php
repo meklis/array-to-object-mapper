@@ -62,7 +62,7 @@ class Property
      */
     public function getMapKeyAsSnakeCase()
     {
-        return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $this->mapKey)), '_');
+        return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', str_replace('-', '_', $this->mapKey))), '_');
     }
 
     /**
