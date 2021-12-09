@@ -1,0 +1,23 @@
+{
+  "name": "meklis/array-to-object-mapper",
+  "description": "Easy mapper array to nested objects",
+  "type": "library",
+  "require": {
+    "php": ">=7.4",
+    "ext-mbstring": "*",
+    "php-di/phpdoc-reader": "dev-master"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Meklis\\ArrToObjectMapper\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Max Boyar",
+      "email": "max.boyar.a@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev"
+}
