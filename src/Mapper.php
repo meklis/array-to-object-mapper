@@ -135,28 +135,28 @@ class Mapper
                 if (is_numeric($value)) {
                     $value = (int)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'float':
                 if (is_numeric($value)) {
                     $value = (float)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'string':
                 if (is_string($value)) {
                     $value = (string)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
             case 'boolean':
                 if (is_bool($value)) {
                     $value = (bool)$value;
                 } elseif ($this->isStrict()) {
-                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, received " . gettype($value));
+                    throw new \Exception("Property " . get_class($property->getClassName()) . "::{$property->getName()} must be type of {$property->getType()}, " . gettype($value) . " given");
                 }
                 break;
         }
