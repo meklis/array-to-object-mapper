@@ -3,6 +3,7 @@
 namespace Meklis\ArrToObjectMapper;
 
 use Meklis\ArrToObjectMapper\ObjectReader\ClassReader;
+use Meklis\ArrToObjectMapper\ObjectReader\Property;
 use stdClass;
 
 class Mapper
@@ -11,7 +12,8 @@ class Mapper
 
     protected $strict = true;
 
-    public function __construct($recurseLimit = 50) {
+    public function __construct($recurseLimit = 50)
+    {
         $this->recurseLimit = $recurseLimit;
     }
 
@@ -52,7 +54,6 @@ class Mapper
     }
 
 
-
     /**
      * @param array $data
      * @param $class
@@ -62,40 +63,99 @@ class Mapper
      */
     public function map(array $data, $class, $recursion = 0): object
     {
-        if($recursion >= $this->recurseLimit) {
+        if ($recursion >= $this->recurseLimit) {
             throw new \Exception("Max recursion level for mapping");
         }
         $classReader = new ClassReader($this->getObject($class));
         foreach ($classReader->getProperties() as $property) {
-            if(!isset($data[$property->getMapKey()])) continue;
+            $propertyName = $this->getPropertyName($property, $data);
+            //Key in array not found as property
+            if (!$propertyName) continue;
 
-            if($this->strict && $this->validateType($property->getType(), $data[$property->getMapKey()]))
+            //Check object is not null when strict enabled
+            if ($this->isStrict() && !$property->isNullAllowed() && is_null($data[$propertyName])) {
+                throw new \Exception("Strict is enabled. Null for property " . get_class($classReader->getObject()) . "::{$propertyName} not allowed");
+            }
 
-            if($property->isObject()) {
-                $value = $this->map($data[$property->getMapKey()], $property->getType(), $recursion++);
-            } else {
-                $value = $data[$property->getMapKey()];
+            $value = $data[$propertyName];
+
+            if ($property->isBasicType() && !$property->isArrayOfObjects()) {
+                if (!is_null($value)) {
+                    switch ($property->getType()) {
+                        case 'integer':
+                            if (is_numeric($value)) {
+                                $value = (int)$value;
+                            } elseif ($this->isStrict()) {
+                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
+                            }
+                            break;
+                        case 'float':
+                            if (is_numeric($value)) {
+                                $value = (float)$value;
+                            } elseif ($this->isStrict()) {
+                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
+                            }
+                            break;
+                        case 'string':
+                            if (is_string($value)) {
+                                $value = (string)$value;
+                            } elseif ($this->isStrict()) {
+                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
+                            }
+                            break;
+                        case 'boolean':
+                            if (is_bool($value)) {
+                                $value = (bool)$value;
+                            } elseif ($this->isStrict()) {
+                                throw new \Exception("Property " . get_class($classReader->getObject()) . "::{$propertyName} must be type of {$property->getType()}, received " . gettype($value));
+                            }
+                            break;
+                    }
+                }
+
+            } elseif ($property->isArrayOfObjects()) {
+                $value = [];
+                $isAssoc = $this->isAssoc($data[$propertyName]);
+                foreach ($data[$propertyName] as $key => $objStruct) {
+                    if ($isAssoc) {
+                        $value[$key] = $this->map($objStruct, $property->getType(), $recursion++);
+                    } else {
+                        $value[] = $this->map($objStruct, $property->getType(), $recursion++);
+                    }
+                }
+            } elseif ($property->isObject() && is_array($data[$propertyName])) {
+                $value = $this->map($data[$propertyName], $property->getType(), $recursion++);
             }
             $classReader->setProperty($property->getName(), $value);
         }
         return $classReader->getObject();
     }
 
-    private function getObject($class) {
-        if(is_object($class)) {
+    private function getObject($class)
+    {
+        if (is_object($class)) {
             return $class;
         }
-        if(class_exists($class)) {
-            return  new $class;
+        if (class_exists($class)) {
+            return new $class;
         }
         return new stdClass();
     }
 
-    protected function validateType($type, $value) {
-        $realType = gettype($value);
-        if($type !== $realType && !class_exists($type)) {
-            throw new \Exception("incorrect type $realType, must be $type");
+    protected function getPropertyName(Property $property, $data)
+    {
+        if (array_key_exists($property->getMapKey(), $data)) {
+            return $property->getMapKey();
+        } elseif (array_key_exists($property->getMapKeyAsSnakeCase(), $data)) {
+            return $property->getMapKeyAsSnakeCase();
         }
-        return $this;
+        return '';
     }
+
+    function isAssoc(array $arr)
+    {
+        if (array() === $arr) return false;
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
+
 }

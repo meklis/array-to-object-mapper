@@ -68,5 +68,5 @@ class ClassReader
     {
         return $this->object;
     }
-
+ 
 }

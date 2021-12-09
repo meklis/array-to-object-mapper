@@ -1,0 +1,30 @@
+{
+  "id": 144,
+  "test_string": "This is test string",
+  "variable_with_snake_case": "Variable with snake case",
+  "child": {
+    "id": 1,
+    "child": null,
+    "params": ["param1", "param2", "param3"]
+  },
+  "childs": [
+    {
+      "id": 1,
+      "child": {
+        "id": 6,
+        "params": ["param1", "param2", "param3"]
+      },
+      "params": ["param1", "param2", "param3"]
+    },
+    {
+      "id": 3,
+      "child": null,
+      "params": ["param1", "param2", "param3"]
+    },
+    {
+      "id": 4,
+      "child": null,
+      "params": ["param1", "param2", "param3"]
+    }
+  ]
+}

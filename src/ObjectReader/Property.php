@@ -58,6 +58,14 @@ class Property
     }
 
     /**
+     * @return mixed
+     */
+    public function getMapKeyAsSnakeCase()
+    {
+        return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $this->mapKey)), '_');
+    }
+
+    /**
      * @param mixed $mapKey
      * @return Property
      */
