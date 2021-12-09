@@ -58,10 +58,9 @@ class Mapper
      * @param array $data
      * @param $class
      * @param $recursion
-     * @return object
      * @throws \ReflectionException
      */
-    public function map(array $data, $class, $recursion = 0): object
+    public function map(array $data, $class, $recursion = 0)
     {
         if ($recursion >= $this->recurseLimit) {
             throw new \Exception("Max recursion level for mapping");
