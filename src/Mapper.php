@@ -81,15 +81,15 @@ class Mapper
 
             if ($property->isBasicType() && !$property->isArrayOfElements()) {
                 if (!is_null($value)) {
-                    $value = $this->formatBasicType($property,$value);
+                    $value = $this->formatBasicType($property, $value);
                 }
             } elseif ($property->isBasicType() && $property->isArrayOfElements()) {
-                foreach ($value as $k=>$v) {
+                foreach ($value as $k => $v) {
                     if (!is_null($v)) {
-                         $value[$k] = $this->formatBasicType($property, $v);
+                        $value[$k] = $this->formatBasicType($property, $v);
                     }
                 }
-            } elseif ($property->isArrayOfElements()) {
+            } elseif ($property->isArrayOfElements() && $data[$propertyName] !== null) {
                 $value = [];
                 $isAssoc = $this->isAssoc($data[$propertyName]);
                 foreach ($data[$propertyName] as $key => $objStruct) {
@@ -128,7 +128,8 @@ class Mapper
         return '';
     }
 
-    protected function formatBasicType(Property $property, $value) {
+    protected function formatBasicType(Property $property, $value)
+    {
         switch ($property->getType()) {
             case 'integer':
                 if (is_numeric($value)) {
