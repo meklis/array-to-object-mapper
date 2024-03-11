@@ -73,7 +73,7 @@ class PhpDocParser
             $data['is_basic_type'] = $this->property->getType()->isBuiltin();
             $data['is_class_name'] = !$this->property->getType()->isBuiltin();
         } else {
-            throw new \Exception("Property @var not found in class {$this->property->getDeclaringClass()->getName()} for property {$this->property->getName()}");
+            throw new \Exception("Property type declaration (@var or type) not found in class {$this->property->getDeclaringClass()->getName()} for property {$this->property->getName()}");
         }
         return $data;
     }
